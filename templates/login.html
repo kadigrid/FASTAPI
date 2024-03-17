@@ -1,0 +1,49 @@
+{% include 'layout.html' %}
+<!--This includes code from layout.html file like if you inspect this page in browser you could see the code of layout.html as well-->
+
+
+
+<!--#Don't include container in layout.html as that is gonna be our individual code for HTML File-->
+
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Login
+        </div>
+        <div class="card-body">
+<!--            this part is when there is wrong login credentials displays incorrect Username or password-->
+<!--            In case of correct password and all you login by getting a valid JWT Token-->
+            {% if msg %}
+            {% if msg == 'Logout Successful' or msg == 'User successfully created' %}
+            <div class="alert alert-success" role="alert">
+                {{msg}}
+            </div>
+            {% else %}
+            <div class="alert alert-danger" role="alert">
+                {{msg}}
+            </div>
+            {% endif %}
+            {% endif %}
+<!--            this part is when there is wrong login credentials displays incorrect Username or password-->
+            <form method="POST" action="/auth">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control"
+                           name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+        <div class="card-footer text-muted">
+            <a href="register"> Register? </a>
+<!--            # if it is old user already exists it gives invalid registration request -->
+        </div>
+    </div>
+</div>
+
+
