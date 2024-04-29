@@ -15,23 +15,13 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
-###################Necessary to add these 3 to access templates files
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 templates=Jinja2Templates(directory="templates")
-##################
 
 SECRET_KEY = "KlgH6AzYDeZeGwD288to79I3vTHT8wp7"
 ALGORITHM = "HS256"
-
-
-# class CreateUser(BaseModel):
-#     username: str
-#     email: Optional[str]
-#     first_name: str
-#     last_name: str
-#     password: str
 
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -52,7 +42,7 @@ class LoginForm:
         self.request: Request = request
         self.username: Optional[str] = None
         self.password: Optional[str] = None
-#HTML form : username and pass but in oAuth form : email and password also email is just a text field just oAuth needs the name it as email
+
     async def create_oauth_form(self):
         form = await self.request.form()
         self.username = form.get("email")
@@ -100,44 +90,24 @@ def create_access_token(username: str, user_id: int,
 
 async def get_current_user(request: Request):
     try:
-        token = request.cookies.get("access_token")  # cookies saved is called access_token which olds the valid JWT
+        token = request.cookies.get("access_token")  
         if token is None:
             return None
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         user_id: int = payload.get("id")
         if username is None or user_id is None:
-            # return None# it breaks when the time on the token expires
-            logout(request)#automatically delete the token instead of validating the token
+            logout(request)
         return {"username": username, "id": user_id}
     except JWTError:
-        # raise get_current_exception()
         raise HTTPException(status_code=404, detail="Not found")
-
-# @router.post("/create/user")
-# async def create_new_user(create_user: CreateUser, db: Session = Depends(get_db)):
-#     create_user_model = models.Users()
-#     create_user_model.email = create_user.email
-#     create_user_model.username = create_user.username
-#     create_user_model.first_name = create_user.first_name
-#     create_user_model.last_name = create_user.last_name
-#
-#     hash_password = get_password_hash(create_user.password)
-#
-#     create_user_model.hashed_password = hash_password
-#     create_user_model.is_active = True
-#
-#     db.add(create_user_model)
-#     db.commit()
-
 
 @router.post("/token")
 async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends(),
                                  db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
-        return False#returns to login page on wrong login credentials
-        # raise False#Gives internal server error on wrong login credentials
+        return False
     token_expires = timedelta(minutes=60)
     token = create_access_token(user.username,
                                 user.id,
@@ -146,10 +116,7 @@ async def login_for_access_token(response: Response, form_data: OAuth2PasswordRe
 
     return True
 
-
-
-#LOGIN AND REGISTER APIs :-
-@router.get("/",response_class=HTMLResponse)#Login Page /auth
+@router.get("/",response_class=HTMLResponse)
 async def authentication_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
@@ -162,13 +129,11 @@ async def login(request: Request, db: Session = Depends(get_db)):
         response = RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
 
         validate_user_cookie = await login_for_access_token(response=response, form_data=form, db=db)
-# in inspect in application you can see the cookies once you login
-        # also to test wagera in application in inspect you can delete the cookies
-        if not validate_user_cookie:# in this case we pass the msg and refresh the login page
+        if not validate_user_cookie:
             msg = "Incorrect Username or Password"
             return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
         return response
-    except HTTPException:# if something breaks along the way
+    except HTTPException:
         msg = "Unknown Error"
         return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
 
@@ -181,7 +146,7 @@ async def logout(request: Request):
     return response
 
 
-@router.get("/register",response_class=HTMLResponse)#Register Page /auth/register
+@router.get("/register",response_class=HTMLResponse)
 async def register(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
@@ -216,26 +181,6 @@ async def register_user(request: Request, email: str = Form(...), username: str 
 
     msg = "User successfully created"
     return templates.TemplateResponse("login.html", {"request": request, "msg": msg})
-
-
-#Exceptions Used mostly for Restful APis than for Full stack Applications
-# def get_user_exception():
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     return credentials_exception
-#
-#
-# def token_exception():
-#     token_exception_response = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Incorrect username or password",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     return token_exception_response
-
 
 
 

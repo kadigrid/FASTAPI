@@ -11,15 +11,12 @@
                     <label>Title</label>
                     <input type="text" class="form-control" name="title" value="{{todo.title}}"
                            required>
-<!--                    We can now from above line we can fetch the todo from todo-id and pass it to our JINJA Template and pass the title in out todo.title box now we can do for description and priority-->
                 </div>
                 <div class="form-group">
                     <label>Description</label>
                     <textarea class="form-control"rows="3" name="description"
                               required>{{todo.description}}
                     </textarea>
-                    <!--                        since it is a text area we can't do like in that in title
-                    Also in the text area if some spaces are there just remove spaces from code and the resave-->
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
@@ -29,7 +26,6 @@
                         <option {% if todo.priority == 3%} selected="selected" {% endif %}>3</option>
                         <option {% if todo.priority == 4%} selected="selected" {% endif %}>4</option>
                         <option {% if todo.priority == 5%} selected="selected" {% endif %}>5</option>
-<!--                        selected="selected" means that the default option-->
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Edit new todo</button>

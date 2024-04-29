@@ -22,27 +22,22 @@
 
 
 {% for todo in todos %}
-<!--for each todo we want to recreate this table row for a specific user ID-->
 {% if todo.complete == False %}
 <tr class="pointer" >
 
       <td>{{loop.index}}</td>
-<!--    To do numbering as per list not fixed -->
       <td>{{todo.title}}</td>
       <td><button onclick="window.location.href='complete/{{todo.id}}'" type="button" class="btn btn-success">Complete</button>
           <button onclick="window.location.href='edit-todo/{{todo.id}}'" type="button" class="btn btn-info">Edit</button>
-<!--          Onclick means redirect or call the API that we created -> Now edit button redirects to edit-todo page-->
       </td>
     </tr>
 {% else %}
 <tr class="pointer alert alert-success" >
 
       <td>{{loop.index}}</td>
-<!--    To do numbering as per list not fixed -->
       <td class="strike-through-td">{{todo.title}}</td>
       <td><button onclick="window.location.href='complete/{{todo.id}}'" type="button" class="btn btn-success">Undo</button>
           <button onclick="window.location.href='edit-todo/{{todo.id}}'" type="button" class="btn btn-info">Edit</button>
-<!--          Onclick means redirect or call the API that we created -> Now edit button redirects to edit-todo page-->
       </td>
     </tr>
 {% endif %}
@@ -52,9 +47,6 @@
 </table>
 
             <a href="add-todo" class="btn btn-primary">Add a new Todo!</a>
-<!--            href="#" means it points to an empty URL-->
-<!--            # So now this button redirects to the add-todo page and since it is a post request in todos.py and form is also POST so it redirects-->
-<!--            back to the todos page-->
         </div>
     </div>
 </div>

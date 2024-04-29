@@ -3,15 +3,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 SQLALCHEMY_DATABASE_URL = "postgresql://oniwpgrm:W7ek4BMgHcUWE9gGYki19OIKDcjjxPP3@rain.db.elephantsql.com/oniwpgrm"
-#ql add in postgres as sqlalchemy looks for it
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )
-# )SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db"
-#
-# engine = create_engine(
-#     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-# )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

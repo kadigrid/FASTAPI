@@ -10,7 +10,6 @@ from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from .auth import get_current_user
-# from .auth import get_user_exception
 
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -33,18 +32,16 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/", response_class=HTMLResponse)# Now all apis are gonna follow with a prefix of todos # todos/ -> renders home.html page
+@router.get("/", response_class=HTMLResponse)
 async def read_all_by_user(request: Request,db: Session = Depends(get_db)):
 
     user = await get_current_user(request)
     if user is None:
         return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
-# if there is no cookie if you try to go to /todos then it will redirect back to the login page
-    # bascically above lines make sure user logs in
     todos = db.query(models.Todos).filter(models.Todos.owner_id == user.get("id")).all()
     return templates.TemplateResponse("home.html", {"request": request,"todos":todos,"user":user})
 
-@router.get("/add-todo", response_class=HTMLResponse)#todos/add-todo
+@router.get("/add-todo", response_class=HTMLResponse)
 async def add_new_todo(request: Request):
     user = await get_current_user(request)
     if user is None:
@@ -70,11 +67,9 @@ async def create_todo(request: Request, title: str = Form(...), description: str
     db.add(todo_model)
     db.commit()
 
-    return RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)#302 needede so that api calls a get request
-# redirects us to a specific api which will call the function instead of redirecting us to a specific page
-# now we can create a new todo in the UI
+    return RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
 
-@router.get("/edit-todo/{todo_id}", response_class=HTMLResponse)#todos/add-todo
+@router.get("/edit-todo/{todo_id}", response_class=HTMLResponse)
 async def edit_todo(request: Request, todo_id: int, db: Session = Depends(get_db)):
 
     user = await get_current_user(request)
@@ -82,14 +77,6 @@ async def edit_todo(request: Request, todo_id: int, db: Session = Depends(get_db
         return RedirectResponse(url="/auth", status_code=status.HTTP_302_FOUND)
 
     todo = db.query(models.Todos).filter(models.Todos.id == todo_id).first()
-
-    # todo.complete = not todo.complete
-    #
-    # db.add(todo)
-    # db.commit()
-    #
-    # return RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
-
 
     return templates.TemplateResponse("edit-todo.html", {"request": request,"todo":todo,"user":user})
 
@@ -114,9 +101,6 @@ async def edit_todo_commit(request: Request, todo_id: int, title: str = Form(...
 
     return RedirectResponse(url="/todos", status_code=status.HTTP_302_FOUND)
 
-
-# Diff. b/w full stack apps and APIs that we are gonna use our router.getdelete by todoid for the full stack app
-# for API we use the .delete HTTP request method
 @router.get("/delete/{todo_id}")
 async def delete_todo(request: Request, todo_id: int, db: Session = Depends(get_db)):
 
@@ -146,7 +130,7 @@ async def complete_todo(request: Request, todo_id: int, db: Session = Depends(ge
 
     todo = db.query(models.Todos).filter(models.Todos.id == todo_id).first()
 
-    todo.complete = not todo.complete #switching it to the opp. of what it already is
+    todo.complete = not todo.complete
 
     db.add(todo)
     db.commit()

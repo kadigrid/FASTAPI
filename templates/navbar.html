@@ -8,10 +8,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 {% if user %}
-<!--                # if user exists then only show it otherwise don't-->
                 <li class="nav-item active">
                     <a class="nav-link" href="/">Home </a>
-<!--                    / then redirects to /todos as changed in main.py and in todos.py too @router.get("/") means .todos-->
                 </li>
                 {% endif %}
             </ul>
